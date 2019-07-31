@@ -8,12 +8,7 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.StringEntity;
 
 import weixin.popular.bean.BaseResult;
-import weixin.popular.bean.wxopen.TemplateAddResult;
-import weixin.popular.bean.wxopen.TemplateLibraryGetResult;
-import weixin.popular.bean.wxopen.TemplateLibraryListResult;
-import weixin.popular.bean.wxopen.TemplateListResult;
-import weixin.popular.bean.wxopen.Wxamplink;
-import weixin.popular.bean.wxopen.WxamplinkgetResult;
+import weixin.popular.bean.wxopen.*;
 import weixin.popular.client.LocalHttpClient;
 import weixin.popular.util.JsonUtil;
 
@@ -164,6 +159,91 @@ public class WxopenAPI extends BaseAPI {
 				.setUri(BASE_URI+"/cgi-bin/wxopen/template/del")
 				.addParameter(PARAM_ACCESS_TOKEN, API.accessToken(access_token))
 				.setEntity(new StringEntity(json,Charset.forName("utf-8")))
+				.build();
+		return LocalHttpClient.executeJsonResult(httpUriRequest,BaseResult.class);
+	}
+
+	/**
+	 * 获取账号可以设置的所有类目
+	 * @since 2.8.28
+	 * @param access_token access_token
+	 * @return result
+	 */
+	public static GetAllCategoriesResult getAllCategories(String access_token) {
+		HttpUriRequest httpUriRequest = RequestBuilder.get()
+				.setHeader(jsonHeader)
+				.setUri(BASE_URI+"/cgi-bin/wxopen/getallcategories")
+				.addParameter(PARAM_ACCESS_TOKEN, API.accessToken(access_token))
+				.build();
+		return LocalHttpClient.executeJsonResult(httpUriRequest,GetAllCategoriesResult.class);
+	}
+
+	/**
+	 * 添加类目
+	 * @since 2.8.28
+	 * @param access_token access_token
+	 * @param categories 添加的类目列表
+	 * @return result
+	 */
+	public static BaseResult addCategory(String access_token, List<Category> categories) {
+		String json = String.format("{\"categories\":%s}", JsonUtil.toJSONString(categories));
+		HttpUriRequest httpUriRequest = RequestBuilder.post()
+				.setHeader(jsonHeader)
+				.setUri(BASE_URI+"/cgi-bin/wxopen/addcategory")
+				.addParameter(PARAM_ACCESS_TOKEN, API.accessToken(access_token))
+				.setEntity(new StringEntity(json, Charset.forName("utf-8")))
+				.build();
+		return LocalHttpClient.executeJsonResult(httpUriRequest,BaseResult.class);
+	}
+
+	/**
+	 * 删除类目
+	 * @since 2.8.28
+	 * @param access_token access_token
+	 * @param first first 一级类目ID
+	 * @param second second 二级类目ID
+	 * @return result
+	 */
+	public static BaseResult deleteCategory(String access_token, Integer first, Integer second) {
+		String json = String.format("{\"first\":%d,\"second\":%d}", first, second);
+		HttpUriRequest httpUriRequest = RequestBuilder.post()
+				.setHeader(jsonHeader)
+				.setUri(BASE_URI+"/cgi-bin/wxopen/deletecategory")
+				.addParameter(PARAM_ACCESS_TOKEN, API.accessToken(access_token))
+				.setEntity(new StringEntity(json, Charset.forName("utf-8")))
+				.build();
+		return LocalHttpClient.executeJsonResult(httpUriRequest,BaseResult.class);
+	}
+
+	/**
+	 * 获取账号已经设置的所有类目
+	 * @since 2.8.28
+	 * @param access_token access_token
+	 * @return result
+	 */
+	public static GetCategoryResult getCategory(String access_token) {
+		HttpUriRequest httpUriRequest = RequestBuilder.get()
+				.setHeader(jsonHeader)
+				.setUri(BASE_URI+"/cgi-bin/wxopen/getcategory")
+				.addParameter(PARAM_ACCESS_TOKEN, API.accessToken(access_token))
+				.build();
+		return LocalHttpClient.executeJsonResult(httpUriRequest,GetCategoryResult.class);
+	}
+
+	/**
+	 * 修改类目
+	 * @since 2.8.28
+	 * @param access_token access_token
+	 * @param category 修改的类目详情
+	 * @return result
+	 */
+	public static BaseResult modifyCategory(String access_token, Category category) {
+		String json = JsonUtil.toJSONString(category);
+		HttpUriRequest httpUriRequest = RequestBuilder.post()
+				.setHeader(jsonHeader)
+				.setUri(BASE_URI+"/cgi-bin/wxopen/modifycategory")
+				.addParameter(PARAM_ACCESS_TOKEN, API.accessToken(access_token))
+				.setEntity(new StringEntity(json, Charset.forName("utf-8")))
 				.build();
 		return LocalHttpClient.executeJsonResult(httpUriRequest,BaseResult.class);
 	}
